@@ -1,3 +1,10 @@
+/*const io = require("socket.io")(3000, {
+    cors: {
+        origin: "http://localhost:3001",
+        methods: ["GET", "POST"]
+    }
+}) */
+
 const io = require("socket.io")(process.env.PORT || 4000, {
     cors: {
         origin: "*",
@@ -5,6 +12,7 @@ const io = require("socket.io")(process.env.PORT || 4000, {
 });
 
 const rooms = {}
+const typingUsers = {}
 
 io.on("connection", (socket) => {
     socket.on("message", (data) => {
@@ -57,6 +65,21 @@ io.on("connection", (socket) => {
             socket.emit("roomUsers", [])
         }
     })
+
+    socket.on("typing", ({ userName, roomName }) => {
+        if (!typingUsers[roomName]) {
+            typingUsers[roomName] = new Set();
+        }
+        typingUsers[roomName].add(userName);
+        io.to(roomName).emit("typingUsers", Array.from(typingUsers[roomName]));
+    });
+
+    socket.on("stopTyping", ({ userName, roomName }) => {
+        if (typingUsers[roomName]) {
+            typingUsers[roomName].delete(userName);
+            io.to(roomName).emit("typingUsers", Array.from(typingUsers[roomName]));
+        }
+    });
 
     socket.on("disconnect", () => {
         const roomName = socket.roomName;
