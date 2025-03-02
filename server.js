@@ -3,7 +3,7 @@
         origin: "http://localhost:3001",
         methods: ["GET", "POST"]
     }
-}) */
+})*/
 
 const io = require("socket.io")(process.env.PORT || 4000, {
     cors: {
@@ -27,7 +27,14 @@ io.on("connection", (socket) => {
         if (roomName && roomName.length > 0) {
             io.to(roomName).emit("deleteMessage", id );
         }
-    });    
+    }); 
+    
+    socket.on("editMessage", (data) => {
+        const { message, roomName, id } = data;
+        if (roomName && roomName.length > 0) {
+            io.to(roomName).emit("editMessage", {id, message} );
+        }
+    }); 
 
     socket.on("joinRoom", (roomName, userName, timestamp) => {
         socket.join(roomName)
