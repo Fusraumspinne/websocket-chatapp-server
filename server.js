@@ -16,11 +16,18 @@ const typingUsers = {}
 
 io.on("connection", (socket) => {
     socket.on("message", (data) => {
-        const { message, userName, roomName, timestamp } = data
+        const { id, message, userName, roomName, timestamp } = data
         if (roomName && roomName.length > 0) {
-            io.to(roomName).emit("message", { userName, message, timestamp })
+            io.to(roomName).emit("message", { id, userName, message, timestamp })
         }
     })
+
+    socket.on("deleteMessage", (data) => {
+        const { roomName, id } = data;
+        if (roomName && roomName.length > 0) {
+            io.to(roomName).emit("deleteMessage", id );
+        }
+    });    
 
     socket.on("joinRoom", (roomName, userName, timestamp) => {
         socket.join(roomName)
