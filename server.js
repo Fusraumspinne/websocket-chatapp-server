@@ -16,9 +16,9 @@ const typingUsers = {}
 
 io.on("connection", (socket) => {
     socket.on("message", (data) => {
-        const { id, message, userName, roomName, timestamp, edited } = data
+        const { id, message, userName, roomName, timestamp, edited, response } = data
         if (roomName && roomName.length > 0) {
-            io.to(roomName).emit("message", { id, userName, message, timestamp, edited })
+            io.to(roomName).emit("message", { id, userName, message, timestamp, edited, response })
         }
     })
 
