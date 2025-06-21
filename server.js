@@ -15,6 +15,11 @@ const rooms = {}
 const typingUsers = {}
 
 io.on("connection", (socket) => {
+    socket.on("adminMessage", (data) => {
+        const { id, message, userName, timestamp} = data
+        io.emit("adminMessage", { id, userName, message, timestamp })
+    })
+
     socket.on("message", (data) => {
         const { id, message, userName, roomName, timestamp, edited, response } = data
         if (roomName && roomName.length > 0) {
@@ -48,7 +53,7 @@ io.on("connection", (socket) => {
 
         rooms[roomName].users.push(userName)
 
-        io.to(roomName).emit("message", {userName: "System", message: `${userName} joined the room`, timestamp, systemClass: "text-red-500"})
+        io.to(roomName).emit("message", {userName: "System", message: `${userName} joined the room`, timestamp})
         io.to(roomName).emit("roomUsers", rooms[roomName].users)
         io.emit("roomsList", rooms)
     })
@@ -63,7 +68,7 @@ io.on("connection", (socket) => {
             }
         }
 
-        io.to(roomName).emit("message", {userName: "System", message: `${userName} left the room`, timestamp, systemClass: "text-red-500"})
+        io.to(roomName).emit("message", {userName: "System", message: `${userName} left the room`, timestamp})
         io.to(roomName).emit("roomUsers", rooms[roomName]?.users || [])
         io.emit("roomsList", rooms)
     })
