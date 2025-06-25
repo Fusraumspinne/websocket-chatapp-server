@@ -44,6 +44,7 @@ io.on("connection", (socket) => {
       io.to(roomName).emit("message", {
         id,
         userName,
+        roomName,
         message,
         timestamp,
         edited,
@@ -53,6 +54,7 @@ io.on("connection", (socket) => {
       io.to("AdminDashboard").emit("message", {
         id,
         userName,
+        roomName,
         message,
         timestamp,
         edited,
